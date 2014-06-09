@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sprite Demonstration</title>
+	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+	<style type="text/css">
+		#draw-target {
+			width: 480px;
+			height: 320px;
+			background-color: #CCF;
+			position: relative;
+		}
+	</style>
+	<script type="text/javascript">
+		/*
+		 * DHTMLSprite 封装所有 DOM 的操作细节
+		 * params 参数说明：
+		 * @imagePath 		图像文件路径
+		 * @imagesWidth 	图像文件的宽度
+		 * @width 			sprite的宽度
+		 * @height 			sprite的高度
+		 * @$drawTarget 	sprite将要附加于的父元素
+		 */
+		var DHTMLSprite = function (params) {
+			var width = params.width,
+				height = params.height,
+				imagesWidth = params.imagesWidth,
+
+				// 在 $drawTarget 指定的 div 元素后加上一个 sprite div 元素
+				$element = params.$drawTarget.append('<div/>').find(':last'),
+				elemStyle = $element[0].style,
+				mathFloor = Math.floor;
+
+			$element.css({
+				position: 'absolute',
+				width: width,
+				height: height,
+				backgroundImage: 'url(' + params.imagePath + ')'
+			});
+
+			var that = {
+				draw: function (x, y) {
+					elemStyle.left = x + 'px';
+					elemStyle.top = y + 'px';
+				},
+
+				// 改变显示的 sprite 图像
+				changeImage: function (index) {
+					index *= width;
+					var vOffset = -mathFloor(index / imagesWidth) * height;
+					var hOffset = -index % imagesWidth;
+					elemStyle.backgroundPosition = hOffset + 'px '
+						+ vOffset + 'px';
+				},
+				show: function () {
+					elemStyle.display = 'block';
+				},
+				hide: function () {
+					elemStyle.display = 'none';
+				},
+				destroy: function () {
+					$element.remove();
+				}
+			};
+			return that;
+		};
+	</script>
+	<script>
+		$(function(){
+			var params = {
+				imagePath: 'images/cogs.png',
+				imagesWidth: 256,
+				width: 64,
+				height: 64,
+				$drawTarget: $('#draw-target')
+			};
+
+			var sprite1 = DHTMLSprite(params),
+				sprite2 = DHTMLSprite(params);
+			sprite2.changeImage(5);
+			sprite1.draw(64, 64);
+			sprite2.draw(352, 192);
+		});
+	</script>
+</head>
+<body>
+	<div id="draw-target"></div>
+</body>
+</html>
